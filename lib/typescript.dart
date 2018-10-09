@@ -117,10 +117,12 @@ class Namespace extends Type {
 class Field extends Member {
   final String comment, name;
   final List<String> types;
-  Field(this.comment, this.name, this.types);
+  final bool allowsNull, allowsUndefined;
+  Field(this.comment, this.name, this.types, this.allowsNull,
+      this.allowsUndefined);
   @override
   String toString() {
-    return '$name (${types?.join(', ')})';
+    return '$name (${types?.join(' | ')}${allowsNull ? ' | null' : ''}${allowsUndefined ? ' | undefined' : ''})';
   }
 
   static List<Field> extractFrom(String code) {
@@ -128,11 +130,15 @@ class Field extends Member {
       final String comment = m.group(1);
       String name = m.group(2);
       final List<String> types = _parseTypes(m.group(3), '|');
-      if (name.endsWith('?')) {
-        name = name.substring(0, name.length - 1);
-        types.add('undefined');
+      final bool allowsNull = types.contains('null');
+      if (allowsNull) {
+        types.remove('null');
       }
-      return new Field(comment, name, types);
+      final bool allowsUndefined = name.endsWith('?');
+      if (allowsUndefined) {
+        name = name.substring(0, name.length - 1);
+      }
+      return new Field(comment, name, types, allowsNull, allowsUndefined);
     }).toList();
   }
 }
