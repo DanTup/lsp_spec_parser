@@ -82,7 +82,7 @@ void _writeField(IndentableStringBuffer buffer, Field field) {
 
 void _writeConst(IndentableStringBuffer buffer, Const cons) {
   _writeDocComment(buffer, cons.comment);
-  buffer.writeIndentedLn('${cons.name} = ${cons.value}');
+  buffer.writeIndentedLn('static const ${cons.name} = ${cons.value};');
 }
 
 class IndentableStringBuffer extends StringBuffer {
@@ -107,7 +107,15 @@ class IndentableStringBuffer extends StringBuffer {
 }
 
 String _mapType(String type) {
-  const types = <String, String>{'boolean': 'bool'};
+  if (type.endsWith('[]')) {
+    return 'List<${_mapType(type.substring(0, type.length - 2))}>';
+  }
+  const types = <String, String>{
+    'boolean': 'bool',
+    'string': 'String',
+    'number': 'num',
+    'any': 'Object',
+  };
   return types[type] ?? type;
 }
 

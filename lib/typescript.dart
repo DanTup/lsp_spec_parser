@@ -34,7 +34,7 @@ List<String> _parseTypes(String baseTypes, String sep) {
 
 final _commentLinePrefixes = new RegExp(r'$[\s*]*', multiLine: true);
 String _cleanComment(String comment) {
-  return comment?.replaceAll(_commentLinePrefixes, '');
+  return comment?.replaceAll(_commentLinePrefixes, ' ');
 }
 
 abstract class ApiItem {
